@@ -1,14 +1,15 @@
 import express from "express";
-import {AllUrlsFront} from "../controllers/url.controllers.js";
 const router = express.Router();
 
-router
-  .get('/', (req, res) => {
-  return res.render('home');
-})
-  .get('/login', (req, res) => {
-  return res.render('login');
-})
- .get('/ejs',AllUrlsFront);
 
-export default router
+import {handleUrl, handleUrlhome} from "../controllers/url_handler.js";
+
+import {login} from "../controllers/static.controller.js";
+
+//http//:localhost:3000/url
+router 
+  .post('/',handleUrl)
+  .get('/', handlerUrlhome)
+  .get('/login', login)
+
+export { router }

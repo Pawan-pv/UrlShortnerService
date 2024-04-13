@@ -1,33 +1,65 @@
 import ejs from "ejs";
+import shortid from 'shortid';
 import express from "express";
-import {dbConnect} from "./dbconnect/db.js";
-import {URL} from "./model/url.model.js"
-import { urlrouter , staticRouter} from "./Router/index.js";
-import path from 'path';
+import { dbConnect } from "./dbconnect/db.js";
+import { URL } from "./model/url.model.js";
+// import { router } from "./Router/static.router.js";
+import path from "path";
+
 
 const port = process.env.PORT || 3000;
 const app = express();
-
-//middleware -express db
-app.use(express.urlencoded({extended: true}));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.set("view engine", "ejs");
+app.set("views", path.resolve("./views"));
+app.use((req, res, next) => {
+  res.setHeader("X-Powered-By", "ChatGPT");
+  next();
+});
+
+
 
 await dbConnect().then(() => {
-  console.log("Database connected")
-})
-//ejs middleware 
-app.set('view engine', 'ejs');
-app.set('views', 
-path.resolve('./views'))
-//backend middleware 
-app.use('/url', urlrouter);
-//frontend satic middleware 
-app.use('/',staticRouter)
+  console.log("Database connected");
+});
 
-try{
-    app.listen(port, () => {
-      console.log(`App is running on port ${port} ⚙️⚙️⚙️`);
-    });
+  app.get('/',(req, res)=>{
+    return res.render("home")
+  })
+
+  app.post('/Back_Home',async (req, res)=>{
+const s_Id = shortid.generate();
+if (!req.body){ 
+  return res
+    .status(400)
+    .json({ error: "url is required" });
+}
+  URL.create({
+    shortId: s_Id,
+    redirectUrl: req.body.url,
+    visitedHistory: [
+      { timestamp: Date.now() }
+    ]
+  });
+  console.log(req.body.url, s_Id);
+  return res.render('home', {
+    rediectUrl: req.body.url
+  });
+})
+
+app.get('/Back_Home',async(req, res)=>{
+  const urls = await URL.find({})
+  return res.render('list_urls',{urls})
+})
+  
+
+
+
+try {
+  app.listen(port, () => {
+    console.log(`App is running on port ${port} ⚙️⚙️⚙️`);
+  });
 } catch (error) {
   console.log(error);
 }
