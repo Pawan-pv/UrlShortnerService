@@ -1,8 +1,10 @@
-import ejs from "ejs";
+
 import express from "express";
+import { User} from "./model/user.model.js"
 import { dbConnect } from "./dbconnect/db.js";
  import { UIrouter, BKrouter } from "./Router/index.js"
 import path from "path";
+const router = express.Router();
 
 const port = 3000;
 const app = express();
@@ -14,20 +16,20 @@ app.use((req, res, next) => {
   res.setHeader("X-Powered-By", "ChatGPT");
   next();
 });
-
-app.use('/',UIrouter)
-app.use('/B',BKrouter)
-
 await dbConnect().then(() => {
   console.log("Database connected");
 });
-
-  
+app.use('/UI',UIrouter)
+app.use('/BK',BKrouter)
 
 try {
-  app.listen(port, () => {
+   app.listen(port, () => {
     console.log(`App is running on port ${port} ⚙️⚙️⚙️`);
   });
 } catch (error) {
-  console.log(error);
+   console.log(error`error while connecting `);
 }
+
+
+  
+

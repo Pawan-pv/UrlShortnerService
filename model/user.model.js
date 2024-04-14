@@ -1,4 +1,3 @@
-
 import mongoose from 'mongoose';
 
 // Define the user schema
@@ -16,13 +15,10 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true
-  },
-  
-},
-                                       { timstamps: true}
-                                      );
+  }
+}, { timestamps: true });
 
 // Create the user model
-const User = mongoose.model('user', userSchema);
+const User = mongoose.model('User', userSchema);
 
-export { User}
+export { User };
